@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import PageWrapper from "./components/PageWrapper.jsx";
 import {
   Accordion,
@@ -10,9 +10,12 @@ import {
   Input,
 } from "@nextui-org/react";
 import SectionWrapper from "./components/SectionWrapper.jsx";
+import Connection from "./components/Connection.jsx";
+import { useAtom } from "jotai";
+import { connInfoAtom } from "./atoms.js";
 
 function App() {
-  const [connInfo, setConnInfo] = useState(null);
+  const [connInfo, setConnInfo] = useAtom(connInfoAtom);
 
   const applyConnInfo = useCallback(() => {
     if (connInfo) return;
@@ -38,7 +41,6 @@ function App() {
 
     const ret = { deviceAddr, nostrRelayAddr, ringsNodeAddr };
     setConnInfo(ret);
-    console.log(ret);
   }, [connInfo, setConnInfo]);
 
   return (
@@ -215,9 +217,12 @@ function App() {
           title="Step 3: Observe and Play"
         >
           <SectionWrapper>
-            <p className="text-sm text-slate-700 mb-1 leading-tight">
-              👀 Please check connection information in Step 2.
-            </p>
+            {connInfo ? null : (
+              <p className="text-sm text-slate-700 mb-1 leading-tight">
+                👀 Please check connection information in Step 2.
+              </p>
+            )}
+            <Connection />
           </SectionWrapper>
         </AccordionItem>
       </Accordion>

@@ -3,11 +3,12 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import "./index.css";
 import { NextUIProvider } from "@nextui-org/react";
+import { Provider as JotaiProvider } from "jotai";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <JotaiProvider>
     <NextUIProvider>
       <App />
     </NextUIProvider>
-  </React.StrictMode>,
+  </JotaiProvider>,
 );

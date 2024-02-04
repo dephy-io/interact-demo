@@ -12,14 +12,22 @@
   "dependencies": {
     "@nextui-org/react": "^2.2.9",
     "@ringsnetwork/rings-node": "https://github.com/RingsNetwork/rings/releases/download/v0.5.5/rings-v0.5.5-wasm32-unknown-unknown.tgz",
+    "borsh": "^2.0.0",
+    "borsher": "^1.2.1",
+    "dephy-borsh-types": "^0.0.1",
+    "ethers": "^6.10.0",
     "framer-motion": "^11.0.3",
+    "jotai": "^2.6.4",
+    "nostr-hooks": "^2.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@swc-jotai/react-refresh": "^0.1.0",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react-swc": "^3.6.0",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
@@ -30,6 +38,10 @@
     "postcss": "^8.4.33",
     "prettier": "^3.2.4",
     "tailwindcss": "^3.4.1",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vite-plugin-wasm": "^3.3.0"
+  },
+  "resolutions": {
+    "@swc/core": "1.3.105"
   }
 }
