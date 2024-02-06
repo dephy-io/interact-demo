@@ -1,0 +1,39 @@
+[package]
+name = "simdev"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.75"
+bytes = "1.5.0"
+clap = { version = "4.4.7", features = ["env", "derive", "string"] }
+dephy_proto = "0.1.1"
+dotenvy = "0.15.7"
+env_logger = "0.10.0"
+futures = "0.3.29"
+hex = "0.4.3"
+http = "1.0.0"
+k256 = { version = "0.13.1", features = ["default", "ecdh", "ecdsa-core", "serde", "ecdsa", "alloc"] }
+log = "0.4.20"
+rand = "0.8.5"
+reqwest = { version = "0.11.22", default-features = false, features = ["rustls-tls"] }
+rumqttc = "0.23.0"
+serde = "1.0.192"
+serde_json = "1.0.108"
+sha3 = "0.10.8"
+tokio = { version = "1.33.0", features = ["full", "io-util"] }
+tokio-util = { version = "0.7.10", features = ["codec"] }
+cbc = { version = "0.1.2", features = ["std"] }
+aes = "0.8.3"
+dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7", version = "0.1.0" }
+borsh = "1.3.1"
+rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
+rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
+rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
+nostr-sdk = "0.24.0"
+async-trait = "0.1.77"
+bs58 = "0.5.0"
+
+[profile.release]
+lto = true
+opt-level = "s"
