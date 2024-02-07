@@ -34,10 +34,10 @@ function App() {
     }
     const nostrRelayAddr =
       document.querySelector("#input__nostrRelayAddr").value.trim() ||
-      "wss://relay-poc.dephy.io";
+      "wss://poc-relay.dephy.cloud";
     const ringsNodeAddr =
       document.querySelector("#input__ringsNodeAddr").value.trim() ||
-      "https://rings-poc.dephy.io";
+      "https://poc-rings.dephy.io";
 
     const ret = { deviceAddr, nostrRelayAddr, ringsNodeAddr };
     setConnInfo(ret);
@@ -185,7 +185,7 @@ function App() {
                     type="text"
                     variant="bordered"
                     label="NoStr relay address (leave empty for default value)"
-                    placeholder="wss://relay-poc.dephy.io"
+                    placeholder="wss://poc-relay.dephy.cloud"
                     id="input__nostrRelayAddr"
                   />
                   <Input
@@ -193,7 +193,7 @@ function App() {
                     type="text"
                     variant="bordered"
                     label="Rings assist node address (leave empty for default value)"
-                    placeholder="https://rings-poc.dephy.io"
+                    placeholder="https://poc-rings.dephy.io"
                     id="input__ringsNodeAddr"
                   />
                   <Button

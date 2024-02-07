@@ -23,10 +23,15 @@ pub struct Cmd {
         short = 'd',
         long,
         env,
-        default_value = "http://127.0.0.1:3883/dephy/signed_message"
+        default_value = "https://poc-edge.dephy.cloud/dephy/signed_message"
     )]
     pub dephy_http_endpoint: String,
-    #[arg(short = 'r', long, env, default_value = "https://rings-poc.dephy.io")]
+    #[arg(
+        short = 'r',
+        long,
+        env,
+        default_value = "https://poc-rings.dephy.cloud"
+    )]
     pub rings_relay_endpoint: String,
     #[command(subcommand)]
     pub command: Command,
