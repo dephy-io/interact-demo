@@ -1,14 +1,17 @@
 use crate::preludes::*;
+use crate::rings::AppRingsProvider;
+use crate::rings::BackendBehaviour;
 use borsh::{to_vec, BorshDeserialize, BorshSerialize};
 use rand::rngs::OsRng;
 use rand::Rng;
+use rings_node::provider::Provider;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
 
 #[derive(Debug, Clone, Copy)]
-struct DeviceContext {
+pub struct DeviceContext {
     pub weight: f64,
 }
 
@@ -31,6 +34,17 @@ pub async fn run_device_main(cmd: &Cmd, args: &RunDeviceArgs) -> Result<()> {
     let http = reqwest::Client::new();
 
     info!("Signer: {}", get_eth_address(&signer.clone().into()));
+
+    let rings_provider = Provider::create(&signer).await?;
+    let rings_handler = BackendBehaviour {
+        provider: rings_provider.clone(),
+        ctx: ctx.clone(),
+    };
+    let p_move = rings_provider.clone();
+    p_move.init(
+        &vec![cmd.rings_relay_endpoint.clone()],
+        Arc::new(rings_handler),
+    )?;
 
     loop {
         let weight = ctx.lock().await.weight;

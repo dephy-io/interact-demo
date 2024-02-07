@@ -3,6 +3,7 @@ pub use anyhow::{anyhow, bail, Result};
 pub use bytes::Bytes;
 use clap::{Args, Parser, Subcommand};
 pub use dephy_types::preludes::*;
+pub use k256::ecdsa::{SigningKey, VerifyingKey};
 pub use log::{debug, error, info, warn};
 pub use nostr_sdk::{
     secp256k1::SecretKey, Alphabet, Client, Event, EventBuilder, Filter, Keys, Kind,

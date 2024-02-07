@@ -132,7 +132,7 @@ function App() {
               Run the binary in terminal, it will print the address part of DID
               starting with <code>0x</code> like this:
             </p>
-            <Code className="mb-4">My address: 0x...</Code>
+            <Code className="mb-4">Signer: 0x...</Code>
             <Divider />
             <p className="text-sm text-slate-700 mb-1 mt-2 leading-tight">
               Get the Device Simulator:
@@ -143,7 +143,7 @@ function App() {
                 size="sm"
                 variant="flat"
                 as="a"
-                href="https://github.com/dephy-io/interact-demo"
+                href="https://github.com/dephy-io/interact-demo/releases"
                 target="_blank"
               >
                 Download prebuilt binaries

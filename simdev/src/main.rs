@@ -2,6 +2,7 @@ mod crypto;
 mod nostr;
 mod preludes;
 mod report;
+mod rings;
 
 use clap::Parser;
 use preludes::*;

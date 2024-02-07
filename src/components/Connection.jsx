@@ -8,7 +8,7 @@ import initRings, {
 } from "@ringsnetwork/rings-node";
 import RingsWasmUrl from "@ringsnetwork/rings-node/dist/rings_node_bg.wasm?url";
 import { Wallet } from "ethers";
-import { useNostrHooksContext, useSubscribe } from "nostr-hooks";
+import { useNostrHooksContext } from "nostr-hooks";
 import { NostrHooksContextProvider } from "nostr-hooks";
 import NDK from "@nostr-dev-kit/ndk";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
@@ -22,10 +22,13 @@ import {
   TableRow,
   TableCell,
   Spacer,
+  Input,
+  Button,
 } from "@nextui-org/react";
 import bs58 from "bs58";
-import { BorshSchema, borshDeserialize } from "borsher";
+import { BorshSchema, borshDeserialize, borshSerialize } from "borsher";
 import { RawMessage, SignedMessage } from "dephy-borsh-types/src/index.js";
+import { useCallback } from "react";
 
 function hexToUint8Array(hexString) {
   // Remove the "0x" prefix if it exists
@@ -68,6 +71,7 @@ export default function _Connection() {
     <>
       <RingsConnection />
       <ConnectionStatus />
+      <WeightInput />
       <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
         <NostrData />
       </NostrHooksContextProvider>
@@ -147,6 +151,57 @@ function RingsConnection() {
   return null;
 }
 
+function WeightInput() {
+  const connInfo = useAtomValue(connInfoAtom);
+  const ringsClient = useAtomValue(ringsClientAtom);
+  const inputRef = useRef();
+
+  const applyWeight = useCallback(() => {
+    if (!ringsClient) return;
+    (async () => {
+      console.log(
+        RingsPb.SendBackendMessageRequest.create({
+          destinationDid: connInfo.deviceAddr,
+          data: JSON.stringify({
+            PlainText: parseFloat(inputRef.current.value).toString(),
+          }),
+        }),
+      );
+      await ringsClient.request("sendBackendMessage", {
+        destination_did: connInfo.deviceAddr,
+        data: JSON.stringify({
+          PlainText: parseFloat(inputRef.current.value).toString(),
+        }),
+      });
+      alert("Ok!");
+    })().catch(console.error);
+  }, [ringsClient, connInfo]);
+
+  return (
+    <>
+      <div className="flex w-full flex-wrap flex-row md:flex-nowrap mb-0 gap-2">
+        <Input
+          size="sm"
+          type="number"
+          variant="bordered"
+          label="Weight"
+          ref={inputRef}
+          initialValue="1"
+        />
+        <Button
+          color="primary"
+          variant="flat"
+          className="w-1 mt-1"
+          onClick={applyWeight}
+        >
+          Set
+        </Button>
+      </div>
+      <Spacer y={3} />
+    </>
+  );
+}
+
 function ConnectionStatus() {
   const connInfo = useAtomValue(connInfoAtom);
   const ringsInfo = useAtomValue(ringsInfoAtom);
@@ -154,7 +209,7 @@ function ConnectionStatus() {
   return (
     <>
       <p>
-        <pre>{JSON.stringify(connInfo, null, 2)}</pre>
+        <pre>Conn: {JSON.stringify(connInfo, null, 2)}</pre>
       </p>
       <Spacer y={3} />
       <p>
