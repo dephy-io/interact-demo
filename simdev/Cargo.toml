@@ -25,11 +25,11 @@ tokio = { version = "1.33.0", features = ["full", "io-util"] }
 tokio-util = { version = "0.7.10", features = ["codec"] }
 cbc = { version = "0.1.2", features = ["std"] }
 aes = "0.8.3"
-dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7", version = "0.1.0" }
+dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7" }
 borsh = "1.3.1"
-rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
-rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
-rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "21b3f64e5cc650650f520c0d1660112280897582", version = "0.5.5" }
+rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
+rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
+rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
 nostr-sdk = "0.24.0"
 async-trait = "0.1.77"
 bs58 = "0.5.0"
