@@ -1,11 +1,27 @@
 use crate::preludes::*;
-use borsh::to_vec;
+use borsh::{to_vec, BorshDeserialize, BorshSerialize};
 use rand::rngs::OsRng;
 use rand::Rng;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::sync::Arc;
+use std::time::Duration;
+use tokio::sync::Mutex;
 use tokio::time::sleep;
 
+#[derive(Debug, Clone, Copy)]
+struct DeviceContext {
+    pub weight: f64,
+}
+
+#[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
+struct EventData {
+    original: f64,
+    weight: f64,
+    actually: f64,
+}
+
 pub async fn run_device_main(cmd: &Cmd, args: &RunDeviceArgs) -> Result<()> {
+    let ctx = Arc::new(Mutex::new(DeviceContext { weight: 1.0 }));
+
     let report_to: Vec<_> = [0u8; 20].into();
     let signer = match &args.from {
         None => random_signing_key(),
@@ -17,7 +33,14 @@ pub async fn run_device_main(cmd: &Cmd, args: &RunDeviceArgs) -> Result<()> {
     info!("Signer: {}", get_eth_address(&signer.clone().into()));
 
     loop {
+        let weight = ctx.lock().await.weight;
         let report = OsRng.gen_range(0.1..100.0);
+        let report = EventData {
+            original: report,
+            weight,
+            actually: report * weight,
+        };
+
         let to = Some(report_to.clone());
 
         let payload = to_vec(&report)?;

@@ -14,13 +14,15 @@
     "@ringsnetwork/rings-node": "https://github.com/RingsNetwork/rings/releases/download/v0.5.5/rings-v0.5.5-wasm32-unknown-unknown.tgz",
     "borsh": "^2.0.0",
     "borsher": "^1.2.1",
+    "bs58": "^5.0.0",
     "dephy-borsh-types": "^0.0.1",
     "ethers": "^6.10.0",
     "framer-motion": "^11.0.3",
     "jotai": "^2.6.4",
     "nostr-hooks": "^2.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-stately": "^3.29.1"
   },
   "devDependencies": {
     "@swc-jotai/react-refresh": "^0.1.0",
