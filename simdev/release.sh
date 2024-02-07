@@ -24,6 +24,6 @@ do
     rustup target add $T
     cargo build --target=$T --release
     mkdir -p target/out/$T
-    cp target/$T/release/debug-utils* target/out/$T/
-    rm target/out/$T/debug-utils.d
+    cp target/$T/release/simdev* target/out/$T/
+    rm target/out/$T/simdev.d
 done

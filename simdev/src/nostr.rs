@@ -1,10 +1,9 @@
 use crate::{
-    crypto::{check_message, did_str_to_addr_bytes},
     preludes::*,
 };
 
-use dephy_types::borsh::to_vec;
-use tokio_util::sync::CancellationToken;
+
+
 
 pub static DEPHY_NOSTR_KIND: Kind = Kind::Regular(1111);
 

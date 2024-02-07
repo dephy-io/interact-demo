@@ -118,8 +118,8 @@ function App() {
         </AccordionItem>
         <AccordionItem
           key="2"
-          aria-label="Step 1: Deploy the device simulator"
-          title="Step 1: Deploy the Device Simulator"
+          aria-label="Step 1: Download and run the device simulator"
+          title="Step 1: Download and Run the Device Simulator"
         >
           <SectionWrapper>
             <p className="text-sm text-gray-700 mb-2 leading-tight">
@@ -129,13 +129,8 @@ function App() {
               Windows, macOS and Linux with glibc.
             </p>
             <p className="text-sm text-gray-700 mb-2 leading-tight">
-              Run the binary in terminal, it will print the address part of DID
-              starting with <code>0x</code> like this:
-            </p>
-            <Code className="mb-4">Signer: 0x...</Code>
-            <Divider />
-            <p className="text-sm text-slate-700 mb-1 mt-2 leading-tight">
-              Get the Device Simulator:
+              The Device Simulator is simple CLI application, run the binary in
+              terminal to make it work.
             </p>
             <div className="pt-1.5 flex flex-row flex-wrap gap-1.5 items">
               <Button
@@ -169,6 +164,13 @@ function App() {
           <SectionWrapper>
             {!connInfo ? (
               <div className="w-full flex flex-col gap-4">
+                <p className="text-sm text-gray-700 mb-2 leading-tight">
+                  Find the deivce address starting with <code>0x</code> like
+                  this in the terminal:
+                </p>
+                <Code className="mb-4">
+                  [INFO simdev::report] Signer: 0x5865a...b7a6c
+                </Code>
                 <div className="flex w-[80%] flex-wrap flex-col md:flex-nowrap mb-0 gap-2">
                   <Input
                     size="sm"

@@ -1,7 +1,7 @@
 use crate::preludes::*;
 use crate::report::DeviceContext;
 use async_trait::async_trait;
-use dephy_types::borsh::{from_slice, to_vec};
+
 use rings_core::dht::Did;
 use rings_core::ecc::SecretKey as RingsSecretKey;
 use rings_core::message::Message;
@@ -42,7 +42,7 @@ impl SwarmCallback for BackendBehaviour {
         Ok(())
     }
 
-    async fn on_event(&self, event: &SwarmEvent) -> Result<(), Box<dyn std::error::Error>> {
+    async fn on_event(&self, _event: &SwarmEvent) -> Result<(), Box<dyn std::error::Error>> {
         Ok(())
     }
 }
