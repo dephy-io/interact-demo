@@ -1,12 +1,9 @@
-mod crypto;
-mod nostr;
-mod preludes;
-mod report;
-mod rings;
-
 use clap::Parser;
-use preludes::*;
-use report::run_device_main;
+use simdev::preludes::*;
+use simdev::report::run_device_main;
+use simdev::report::DeviceContext;
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -14,8 +11,8 @@ async fn main() -> Result<()> {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("off,simdev=info"))
         .init();
     let cmd = Cmd::parse();
-    match &cmd.command {
-        Command::RunDevice(args) => run_device_main(&cmd, args).await?,
-    };
+
+    let ctx = Arc::new(Mutex::new(DeviceContext { weight: 1.0 }));
+    run_device_main(cmd, ctx, None).await?;
     Ok(())
 }

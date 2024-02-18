@@ -2,10 +2,12 @@ use crate::preludes::*;
 use crate::report::DeviceContext;
 use async_trait::async_trait;
 
+use futures::channel::mpsc::Sender;
+use futures::SinkExt;
 use rings_core::dht::Did;
 use rings_core::ecc::SecretKey as RingsSecretKey;
-use rings_core::message::Message;
 use rings_core::message::MessagePayload;
+use rings_core::message::{Message, MessageVerificationExt};
 use rings_core::session::SessionSkBuilder;
 use rings_core::storage::MemStorage;
 use rings_core::swarm::callback::SwarmCallback;
@@ -23,12 +25,15 @@ use tokio::sync::Mutex;
 pub struct BackendBehaviour {
     pub provider: Arc<Provider>,
     pub ctx: Arc<Mutex<DeviceContext>>,
+    pub tx: Option<Sender<GuiAppMessage>>,
 }
 
 #[async_trait]
 impl SwarmCallback for BackendBehaviour {
     async fn on_inbound(&self, payload: &MessagePayload) -> Result<(), Box<dyn std::error::Error>> {
         let msg: Message = payload.transaction.data()?;
+        let s = payload.transaction.signer();
+
         if let Message::CustomMessage(msg) = msg {
             let msg: BackendMessage = bincode::deserialize(msg.0.as_slice())?;
             if let BackendMessage::PlainText(msg) = msg {
@@ -36,7 +41,11 @@ impl SwarmCallback for BackendBehaviour {
                 let mut c = self.ctx.lock().await;
                 c.weight = i;
                 drop(c);
-                info!("Weight changed to {}!", i)
+                let m = format!("Weight changed to {} by {}", i, s.to_string());
+                info!("{}", &m);
+                if let Some(tx) = &self.tx {
+                    tx.clone().send(GuiAppMessage::Message(m)).await?
+                }
             };
         }
         Ok(())
@@ -49,7 +58,7 @@ impl SwarmCallback for BackendBehaviour {
 
 #[async_trait]
 pub trait AppRingsProvider {
-    async fn create<'a>(key: &'a SigningKey) -> Result<Arc<Self>>;
+    async fn create(key: &SigningKey) -> Result<Arc<Self>>;
     fn init(
         self: Arc<Self>,
         p2p_bootstrap_node_list: &Vec<String>,

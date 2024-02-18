@@ -2,6 +2,8 @@ use crate::preludes::*;
 use crate::rings::AppRingsProvider;
 use crate::rings::BackendBehaviour;
 use borsh::{to_vec, BorshDeserialize, BorshSerialize};
+use futures::SinkExt;
+use iced::futures::channel::mpsc::Sender;
 use rand::rngs::OsRng;
 use rand::Rng;
 use rings_node::provider::Provider;
@@ -22,23 +24,41 @@ struct EventData {
     actually: f64,
 }
 
-pub async fn run_device_main(cmd: &Cmd, args: &RunDeviceArgs) -> Result<()> {
-    let ctx = Arc::new(Mutex::new(DeviceContext { weight: 1.0 }));
-
+pub async fn run_device_main(
+    cmd: Cmd,
+    ctx: Arc<Mutex<DeviceContext>>,
+    tx: Option<Sender<GuiAppMessage>>,
+) -> Result<()> {
     let report_to: Vec<_> = [0u8; 20].into();
-    let signer = match &args.from {
+    let signer = match &cmd.from {
         None => random_signing_key(),
         Some(key) => parse_signing_key(key.replace("0x", ""))?,
     };
-    let d = Duration::from_secs(args.interval);
+    let d = Duration::from_secs(cmd.interval);
     let http = reqwest::Client::new();
 
-    info!("Signer: {}", get_eth_address(&signer.clone().into()));
+    macro_rules! tx_send {
+        ($msg:expr) => {
+            if let Some(tx) = &tx {
+                tx.clone().send($msg).await?;
+            }
+        };
+    }
+
+    let addr = get_eth_address(&signer.clone().into());
+    info!("Signer: {}", &addr);
+    tx_send!(GuiAppMessage::Start(addr));
+
+    tx_send!(GuiAppMessage::Message(format!(
+        "Started with arguments: {:?}",
+        &cmd
+    )));
 
     let rings_provider = Provider::create(&signer).await?;
     let rings_handler = BackendBehaviour {
         provider: rings_provider.clone(),
         ctx: ctx.clone(),
+        tx: tx.clone(),
     };
     let p_move = rings_provider.clone();
     p_move.init(
@@ -62,6 +82,7 @@ pub async fn run_device_main(cmd: &Cmd, args: &RunDeviceArgs) -> Result<()> {
             .create_message(MessageChannel::Normal(233), payload, to, None)
             .await?;
         info!("Fake report: {:?}", &report);
+        tx_send!(GuiAppMessage::Message(format!("Published {:?}", &report)));
         let payload = to_vec(&payload)?;
         info!("Hex: 0x{}", hex::encode(payload.as_slice()));
 
