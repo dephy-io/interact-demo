@@ -33,17 +33,7 @@ pub struct Cmd {
         default_value = "https://poc-rings.dephy.cloud"
     )]
     pub rings_relay_endpoint: String,
-    #[command(subcommand)]
-    pub command: Command,
-}
 
-#[derive(Subcommand, Clone, Debug)]
-pub enum Command {
-    RunDevice(RunDeviceArgs),
-}
-
-#[derive(Args, Clone, Debug)]
-pub struct RunDeviceArgs {
     /// Report signer, no value means random signer
     #[arg(short, long, env)]
     pub from: Option<String>,
@@ -58,4 +48,14 @@ fn get_relative_path(p: &str) -> PathBuf {
     path.pop();
     path.push(p);
     path
+}
+
+#[derive(Debug, Clone)]
+pub enum GuiAppMessage {
+    Noop,
+    Error(String),
+    Start(String),
+    Message(String),
+    CopyToClipboard(String),
+    UpdateWeight(f64),
 }
