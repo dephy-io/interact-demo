@@ -1,4 +1,11 @@
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { connInfoAtom, ringsClientAtom, ringsInfoAtom } from "../atoms.js";
 import initRings, {
@@ -12,7 +19,6 @@ import { useNostrHooksContext } from "nostr-hooks";
 import { NostrHooksContextProvider } from "nostr-hooks";
 import NDK from "@nostr-dev-kit/ndk";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
-import { useMemo } from "react";
 import { useListData } from "react-stately";
 import {
   Table,
@@ -28,7 +34,6 @@ import {
 import bs58 from "bs58";
 import { BorshSchema, borshDeserialize, borshSerialize } from "borsher";
 import { RawMessage, SignedMessage } from "dephy-borsh-types/src/index.js";
-import { useCallback } from "react";
 
 function hexToUint8Array(hexString) {
   // Remove the "0x" prefix if it exists
@@ -68,18 +73,37 @@ export default function _Connection() {
   if (!connInfo) return null;
 
   return (
-    <>
-      <RingsConnection />
-      <ConnectionStatus />
-      <WeightInput />
-      <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
+    <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
+      <ConnectionLogProvider>
+        <RingsConnection />
+        <ConnectionStatus />
+        <WeightInput />
         <NostrData />
-      </NostrHooksContextProvider>
-    </>
+      </ConnectionLogProvider>
+    </NostrHooksContextProvider>
   );
 }
 
+const ConnLogListContext = createContext(null);
+const ConnLogListItemsContext = createContext([]);
+
+function ConnectionLogProvider({ children }) {
+  const list = useNostrData();
+
+  return (
+    <ConnLogListContext.Provider value={list}>
+      <ConnLogListItemsContext.Provider value={list.items}>
+        {children}
+      </ConnLogListItemsContext.Provider>
+    </ConnLogListContext.Provider>
+  );
+}
+
+const useConnLogList = () => useContext(ConnLogListContext);
+const useConnLogListItems = () => useContext(ConnLogListItemsContext);
+
 function RingsConnection() {
+  const logList = useConnLogList();
   const connInfo = useAtomValue(connInfoAtom);
   const setRingsInfo = useSetAtom(ringsInfoAtom);
   const setRingsClient = useSetAtom(ringsClientAtom);
@@ -107,6 +131,7 @@ function RingsConnection() {
         return hexToUint8Array(sig);
       };
 
+      logList.m("[Init] Loading Rings WASM for P2P connection.");
       setRingsInfo((val) => {
         return {
           ...val,
@@ -135,10 +160,24 @@ function RingsConnection() {
           url: connInfo.ringsNodeAddr,
         }),
       );
+      logList.m(
+        "[Control Channel] Connected to helper node for P2P handshaking with Rings.",
+      );
       setRingsInfo((val) => ({
         ...val,
         connectedToRelay: true,
       }));
+      setTimeout(() => {
+        (async () => {
+          await ringsClient.request(
+            "connectWithDid",
+            RingsPb.ConnectWithDidRequest.create({
+              did: connInfo.deviceAddr,
+            }),
+          );
+          logList.m(`[Control Channel] Connected to ${connInfo.deviceAddr}`);
+        })().catch(console.error);
+      }, 1000);
     })().catch((e) => {
       console.error(e);
       setRingsInfo((val) => ({
@@ -155,6 +194,7 @@ function WeightInput() {
   const connInfo = useAtomValue(connInfoAtom);
   const ringsClient = useAtomValue(ringsClientAtom);
   const inputRef = useRef();
+  const logList = useConnLogList();
 
   const applyWeight = useCallback(() => {
     if (!ringsClient) return;
@@ -173,6 +213,9 @@ function WeightInput() {
           PlainText: parseFloat(inputRef.current.value).toString(),
         }),
       });
+      logList.m(
+        "[Control Channel] Sent message through DHT network for changing weight.",
+      );
       alert("Ok!");
     })().catch(console.error);
   }, [ringsClient, connInfo]);
@@ -213,7 +256,16 @@ function ConnectionStatus() {
       </p>
       <Spacer y={3} />
       <p>
-        <pre>Rings: {JSON.stringify(ringsInfo, null, 2)}</pre>
+        <pre>
+          Rings:{" "}
+          {JSON.stringify(
+            {
+              myDid: ringsInfo.accountAddress,
+            },
+            null,
+            2,
+          )}
+        </pre>
       </p>
       <Spacer y={3} />
     </>
@@ -252,6 +304,18 @@ const useNostrData = () => {
   const { ndk } = useNostrHooksContext();
 
   useEffect(() => {
+    list.m = (message) => {
+      const ts = Date.now();
+      const id = `${ts}-${Math.ceil(Math.random() * 10000)}`;
+      return list.prepend({
+        ts: Math.round(ts / 1000),
+        id,
+        message,
+      });
+    };
+  }, [list]);
+
+  useEffect(() => {
     if (!ndk || !connInfo) return;
 
     const did = "did:dephy:" + connInfo.deviceAddr.toLowerCase();
@@ -261,6 +325,7 @@ const useNostrData = () => {
       since: now.current,
       ["#c"]: ["dephy"],
     });
+    list.m("[NoStr] Subscribed for DePHY messages.");
     s.on("event", (e) => {
       const i = processEvent(e, did);
       if (i) {
@@ -284,18 +349,26 @@ const columns = [
 ];
 
 const NostrData = () => {
-  const events = useNostrData();
+  const events = useConnLogListItems();
+
+  useEffect(() => {
+    console.log(events.items);
+  }, [events.items]);
 
   return (
     <Table>
       <TableHeader columns={columns}>
         {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
       </TableHeader>
-      <TableBody items={events.items || []}>
+      <TableBody items={events || []}>
         {(item) => (
           <TableRow key={item.id}>
             <TableCell>
-              <pre>{item.payload}</pre>
+              <pre>
+                {item.message
+                  ? `${item.ts} 📶 ${item.message}`
+                  : `${item.r.timestamp} 🌎 [NoStr] Received: ${item.payload}`}
+              </pre>
             </TableCell>
           </TableRow>
         )}
