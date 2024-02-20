@@ -214,7 +214,7 @@ function WeightInput() {
         }),
       });
       logList.m(
-        "[Control Channel] Sent message through DHT network for changing weight.",
+        "[Control Channel] Sent message through P2P network for changing weight.",
       );
       alert("Ok!");
     })().catch(console.error);
