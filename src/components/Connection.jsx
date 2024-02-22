@@ -317,7 +317,7 @@ const NostrData = () => {
   const events = useConnLogListItems();
 
   return (
-    <Code block h="50vh" mih="420px">
+    <Code block h="420px">
       {events.map((item) => (
         <Fragment key={item.id}>
           {item.message
