@@ -1,4 +1,3 @@
-import "./App.css";
 import { useCallback } from "react";
 import PageWrapper from "./components/PageWrapper.jsx";
 import {
@@ -13,6 +12,8 @@ import SectionWrapper from "./components/SectionWrapper.jsx";
 import Connection from "./components/Connection.jsx";
 import { useAtom } from "jotai";
 import { connInfoAtom } from "./atoms.js";
+import { AppShell } from "@mantine/core";
+import Nav from "./components/Nav.jsx";
 
 function App() {
   const [connInfo, setConnInfo] = useAtom(connInfoAtom);
@@ -232,4 +233,17 @@ function App() {
   );
 }
 
-export default App;
+function AppWrapper() {
+  return (
+    <AppShell header={{ height: 80 }}>
+      <AppShell.Header withBorder={false}>
+        <Nav />
+      </AppShell.Header>
+      <AppShell.Main>
+        <App />
+      </AppShell.Main>
+    </AppShell>
+  );
+}
+
+export default AppWrapper;
