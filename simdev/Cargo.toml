@@ -16,10 +16,19 @@ env_logger = "0.10.0"
 futures = "0.3.29"
 hex = "0.4.3"
 http = "1.0.0"
-k256 = { version = "0.13.1", features = ["default", "ecdh", "ecdsa-core", "serde", "ecdsa", "alloc"] }
+k256 = { version = "0.13.1", features = [
+    "default",
+    "ecdh",
+    "ecdsa-core",
+    "serde",
+    "ecdsa",
+    "alloc",
+] }
 log = "0.4.20"
 rand = "0.8.5"
-reqwest = { version = "0.11.22", default-features = false, features = ["rustls-tls"] }
+reqwest = { version = "0.11.22", default-features = false, features = [
+    "rustls-tls",
+] }
 rumqttc = "0.23.0"
 serde = { version = "1.0.192", features = ["derive"] }
 serde_json = "1.0.108"
@@ -30,15 +39,20 @@ cbc = { version = "0.1.2", features = ["std"] }
 aes = "0.8.3"
 dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7" }
 borsh = "1.3.1"
-rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
-rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
-rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "2bfa6949d8aa0dd2f678bbfebaca1563035f48ea" }
+rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2" }
+rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2", default-features = false, features = [
+    "node_minimal",
+] }
+rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2" }
 nostr-sdk = "0.24.0"
 async-trait = "0.1.77"
 bs58 = "0.5.0"
 bincode = "1.3.3"
 libsecp256k1 = "0.7.1"
-iced = { git = "https://github.com/iced-rs/iced", rev = "c76a9eb2ff08ac242ed27d7fb11f536c1cc4411a", features = ["system", "tokio"] }
+iced = { git = "https://github.com/iced-rs/iced", rev = "c76a9eb2ff08ac242ed27d7fb11f536c1cc4411a", features = [
+    "system",
+    "tokio",
+] }
 cli-clipboard = "0.4.0"
 chrono = "0.4.34"
 

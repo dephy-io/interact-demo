@@ -1,4 +1,11 @@
-import { useEffect, useRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+  createContext,
+  useContext,
+} from "react";
 import { useAtomValue, useSetAtom } from "jotai";
 import { connInfoAtom, ringsClientAtom, ringsInfoAtom } from "../atoms.js";
 import initRings, {
@@ -12,23 +19,14 @@ import { useNostrHooksContext } from "nostr-hooks";
 import { NostrHooksContextProvider } from "nostr-hooks";
 import NDK from "@nostr-dev-kit/ndk";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
-import { useMemo } from "react";
 import { useListData } from "react-stately";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Spacer,
-  Input,
-  Button,
-} from "@nextui-org/react";
 import bs58 from "bs58";
 import { BorshSchema, borshDeserialize, borshSerialize } from "borsher";
 import { RawMessage, SignedMessage } from "dephy-borsh-types/src/index.js";
-import { useCallback } from "react";
+import { Code, Text } from "@mantine/core";
+import { Fragment } from "react";
+import { StyledInput } from "./AppColumn.jsx";
+import { notifications } from "@mantine/notifications";
 
 function hexToUint8Array(hexString) {
   // Remove the "0x" prefix if it exists
@@ -68,18 +66,36 @@ export default function _Connection() {
   if (!connInfo) return null;
 
   return (
-    <>
-      <RingsConnection />
-      <ConnectionStatus />
-      <WeightInput />
-      <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
+    <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
+      <ConnectionLogProvider>
+        <RingsConnection />
+        <WeightInput />
         <NostrData />
-      </NostrHooksContextProvider>
-    </>
+      </ConnectionLogProvider>
+    </NostrHooksContextProvider>
   );
 }
 
+const ConnLogListContext = createContext(null);
+const ConnLogListItemsContext = createContext([]);
+
+function ConnectionLogProvider({ children }) {
+  const list = useNostrData();
+
+  return (
+    <ConnLogListContext.Provider value={list}>
+      <ConnLogListItemsContext.Provider value={list.items}>
+        {children}
+      </ConnLogListItemsContext.Provider>
+    </ConnLogListContext.Provider>
+  );
+}
+
+const useConnLogList = () => useContext(ConnLogListContext);
+const useConnLogListItems = () => useContext(ConnLogListItemsContext);
+
 function RingsConnection() {
+  const logList = useConnLogList();
   const connInfo = useAtomValue(connInfoAtom);
   const setRingsInfo = useSetAtom(ringsInfoAtom);
   const setRingsClient = useSetAtom(ringsClientAtom);
@@ -107,6 +123,7 @@ function RingsConnection() {
         return hexToUint8Array(sig);
       };
 
+      logList.m("[Init] Loading Rings WASM for P2P connection.");
       setRingsInfo((val) => {
         return {
           ...val,
@@ -135,10 +152,24 @@ function RingsConnection() {
           url: connInfo.ringsNodeAddr,
         }),
       );
+      logList.m(
+        "[Control Channel] Connected to helper node for P2P handshaking with Rings.",
+      );
       setRingsInfo((val) => ({
         ...val,
         connectedToRelay: true,
       }));
+      setTimeout(() => {
+        (async () => {
+          await ringsClient.request(
+            "connectWithDid",
+            RingsPb.ConnectWithDidRequest.create({
+              did: connInfo.deviceAddr,
+            }),
+          );
+          logList.m(`[Control Channel] Connected to ${connInfo.deviceAddr}`);
+        })().catch(console.error);
+      }, 1000);
     })().catch((e) => {
       console.error(e);
       setRingsInfo((val) => ({
@@ -155,6 +186,7 @@ function WeightInput() {
   const connInfo = useAtomValue(connInfoAtom);
   const ringsClient = useAtomValue(ringsClientAtom);
   const inputRef = useRef();
+  const logList = useConnLogList();
 
   const applyWeight = useCallback(() => {
     if (!ringsClient) return;
@@ -173,50 +205,42 @@ function WeightInput() {
           PlainText: parseFloat(inputRef.current.value).toString(),
         }),
       });
-      alert("Ok!");
-    })().catch(console.error);
+      logList.m(
+        "[Control Channel] Sent message through P2P network for changing weight.",
+      );
+      notifications.show({
+        title: "Successful sent P2P message.",
+        color: "green",
+      });
+    })().catch((e) => {
+      console.error(e);
+      notifications.show({
+        title: "Failed to send P2P message, check console for details.",
+        color: "red",
+      });
+    });
   }, [ringsClient, connInfo]);
 
   return (
-    <>
-      <div className="flex w-full flex-wrap flex-row md:flex-nowrap mb-0 gap-2">
-        <Input
-          size="sm"
-          type="number"
-          variant="bordered"
-          label="Weight"
-          ref={inputRef}
-          initialValue="1"
-        />
-        <Button
-          color="primary"
-          variant="flat"
-          className="w-1 mt-1"
-          onClick={applyWeight}
-        >
-          Set
-        </Button>
-      </div>
-      <Spacer y={3} />
-    </>
-  );
-}
-
-function ConnectionStatus() {
-  const connInfo = useAtomValue(connInfoAtom);
-  const ringsInfo = useAtomValue(ringsInfoAtom);
-
-  return (
-    <>
-      <p>
-        <pre>Conn: {JSON.stringify(connInfo, null, 2)}</pre>
-      </p>
-      <Spacer y={3} />
-      <p>
-        <pre>Rings: {JSON.stringify(ringsInfo, null, 2)}</pre>
-      </p>
-      <Spacer y={3} />
-    </>
+    <StyledInput
+      ref={inputRef}
+      type="number"
+      title="Weight"
+      placeholder="float64"
+    >
+      <Text
+        onClick={applyWeight}
+        component="a"
+        px="12px"
+        py="14px"
+        mx="1px"
+        my="0"
+        c="#E4A055"
+        style={{ fontWeight: 500, alignSelf: "center", cursor: "pointer" }}
+      >
+        Set
+      </Text>
+    </StyledInput>
   );
 }
 
@@ -252,6 +276,18 @@ const useNostrData = () => {
   const { ndk } = useNostrHooksContext();
 
   useEffect(() => {
+    list.m = (message) => {
+      const ts = Date.now();
+      const id = `${ts}-${Math.ceil(Math.random() * 10000)}`;
+      return list.prepend({
+        ts: Math.round(ts / 1000),
+        id,
+        message,
+      });
+    };
+  }, [list]);
+
+  useEffect(() => {
     if (!ndk || !connInfo) return;
 
     const did = "did:dephy:" + connInfo.deviceAddr.toLowerCase();
@@ -261,6 +297,7 @@ const useNostrData = () => {
       since: now.current,
       ["#c"]: ["dephy"],
     });
+    list.m("[NoStr] Subscribed for DePHY messages.");
     s.on("event", (e) => {
       const i = processEvent(e, did);
       if (i) {
@@ -276,31 +313,20 @@ const useNostrData = () => {
   return list;
 };
 
-const columns = [
-  {
-    key: "data",
-    label: "Data",
-  },
-];
-
 const NostrData = () => {
-  const events = useNostrData();
+  const events = useConnLogListItems();
 
   return (
-    <Table>
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={events.items || []}>
-        {(item) => (
-          <TableRow key={item.id}>
-            <TableCell>
-              <pre>{item.payload}</pre>
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <Code block h="420px">
+      {events.map((item) => (
+        <Fragment key={item.id}>
+          {item.message
+            ? `${item.ts} 📶 ${item.message}`
+            : `${item.r.timestamp} 🌎 [NoStr] Received: ${item.payload}`}
+          {"\n"}
+        </Fragment>
+      ))}
+    </Code>
   );
 };
 
