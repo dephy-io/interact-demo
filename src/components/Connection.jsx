@@ -20,20 +20,13 @@ import { NostrHooksContextProvider } from "nostr-hooks";
 import NDK from "@nostr-dev-kit/ndk";
 import NDKCacheAdapterDexie from "@nostr-dev-kit/ndk-cache-dexie";
 import { useListData } from "react-stately";
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Spacer,
-  Input,
-  Button,
-} from "@nextui-org/react";
 import bs58 from "bs58";
 import { BorshSchema, borshDeserialize, borshSerialize } from "borsher";
 import { RawMessage, SignedMessage } from "dephy-borsh-types/src/index.js";
+import { Code, Text } from "@mantine/core";
+import { Fragment } from "react";
+import { StyledInput } from "./AppColumn.jsx";
+import { notifications } from "@mantine/notifications";
 
 function hexToUint8Array(hexString) {
   // Remove the "0x" prefix if it exists
@@ -76,7 +69,6 @@ export default function _Connection() {
     <NostrHooksContextProvider ndk={ndk[1]} relays={ndk[0]}>
       <ConnectionLogProvider>
         <RingsConnection />
-        <ConnectionStatus />
         <WeightInput />
         <NostrData />
       </ConnectionLogProvider>
@@ -216,59 +208,39 @@ function WeightInput() {
       logList.m(
         "[Control Channel] Sent message through P2P network for changing weight.",
       );
-      alert("Ok!");
-    })().catch(console.error);
+      notifications.show({
+        title: "Successful sent P2P message.",
+        color: "green",
+      });
+    })().catch((e) => {
+      console.error(e);
+      notifications.show({
+        title: "Failed to send P2P message, check console for details.",
+        color: "red",
+      });
+    });
   }, [ringsClient, connInfo]);
 
   return (
-    <>
-      <div className="flex w-full flex-wrap flex-row md:flex-nowrap mb-0 gap-2">
-        <Input
-          size="sm"
-          type="number"
-          variant="bordered"
-          label="Weight"
-          ref={inputRef}
-          initialValue="1"
-        />
-        <Button
-          color="primary"
-          variant="flat"
-          className="w-1 mt-1"
-          onClick={applyWeight}
-        >
-          Set
-        </Button>
-      </div>
-      <Spacer y={3} />
-    </>
-  );
-}
-
-function ConnectionStatus() {
-  const connInfo = useAtomValue(connInfoAtom);
-  const ringsInfo = useAtomValue(ringsInfoAtom);
-
-  return (
-    <>
-      <p>
-        <pre>Conn: {JSON.stringify(connInfo, null, 2)}</pre>
-      </p>
-      <Spacer y={3} />
-      <p>
-        <pre>
-          Rings:{" "}
-          {JSON.stringify(
-            {
-              myDid: ringsInfo.accountAddress,
-            },
-            null,
-            2,
-          )}
-        </pre>
-      </p>
-      <Spacer y={3} />
-    </>
+    <StyledInput
+      ref={inputRef}
+      type="number"
+      title="Weight"
+      placeholder="float64"
+    >
+      <Text
+        onClick={applyWeight}
+        component="a"
+        px="12px"
+        py="14px"
+        mx="1px"
+        my="0"
+        c="#E4A055"
+        style={{ fontWeight: 500, alignSelf: "center", cursor: "pointer" }}
+      >
+        Set
+      </Text>
+    </StyledInput>
   );
 }
 
@@ -341,39 +313,20 @@ const useNostrData = () => {
   return list;
 };
 
-const columns = [
-  {
-    key: "data",
-    label: "Data",
-  },
-];
-
 const NostrData = () => {
   const events = useConnLogListItems();
 
-  useEffect(() => {
-    console.log(events.items);
-  }, [events.items]);
-
   return (
-    <Table>
-      <TableHeader columns={columns}>
-        {(column) => <TableColumn key={column.key}>{column.label}</TableColumn>}
-      </TableHeader>
-      <TableBody items={events || []}>
-        {(item) => (
-          <TableRow key={item.id}>
-            <TableCell>
-              <pre>
-                {item.message
-                  ? `${item.ts} 📶 ${item.message}`
-                  : `${item.r.timestamp} 🌎 [NoStr] Received: ${item.payload}`}
-              </pre>
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <Code block h="50vh" mih="420px">
+      {events.map((item) => (
+        <Fragment key={item.id}>
+          {item.message
+            ? `${item.ts} 📶 ${item.message}`
+            : `${item.r.timestamp} 🌎 [NoStr] Received: ${item.payload}`}
+          {"\n"}
+        </Fragment>
+      ))}
+    </Code>
   );
 };
 

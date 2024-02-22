@@ -1,4 +1,5 @@
 import { Container, Flex, Box, Group, ThemeIcon } from "@mantine/core";
+import { useViewportSize } from "@mantine/hooks";
 import {
   IconBrandDiscordFilled,
   IconBrandGithubFilled,
@@ -33,8 +34,15 @@ const SiteLogo = (props) => (
 );
 
 export default function Nav() {
+  const { width: vwWidth } = useViewportSize();
+
   return (
-    <Container h="100%" py="20px">
+    <Container
+      h="100%"
+      py="20px"
+      pl={vwWidth < 720 ? "20px" : "60px"}
+      pr={vwWidth < 720 ? "10px" : "50px"}
+    >
       <Flex justify="space-between" align="center" direction="row">
         <SiteLogo style={{ display: "flex" }} />
         <Group gap="8px">

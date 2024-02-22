@@ -12,6 +12,7 @@
   "dependencies": {
     "@mantine/core": "^7.5.3",
     "@mantine/hooks": "^7.5.3",
+    "@mantine/notifications": "^7.5.3",
     "@nextui-org/react": "^2.2.9",
     "@ringsnetwork/rings-node": "https://github.com/RingsNetwork/rings/releases/download/v0.5.5/rings-v0.5.5-wasm32-unknown-unknown.tgz",
     "@tabler/icons-react": "^2.47.0",

@@ -1,11 +1,12 @@
 import "@mantine/core/styles.css";
-import "./App.css";
+import "@mantine/notifications/styles.css";
 
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { Provider as JotaiProvider } from "jotai";
 import { MantineProvider, createTheme } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 
 const theme = createTheme({
   black: "#000000",
@@ -33,6 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       theme={theme}
       cssVariablesResolver={cssVarOverrides}
     >
+      <Notifications />
       <App />
     </MantineProvider>
   </JotaiProvider>,
