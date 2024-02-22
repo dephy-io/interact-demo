@@ -1,0 +1,14 @@
+.HeroBgWrapper > :before {
+  content: " ";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 360px;
+  background-image: url("../assets/hero-cube.png");
+  background-size: 320px auto;
+  background-repeat: no-repeat;
+  background-position: calc(50% + 460px) 0;
+  transform: translate(0, 54px);
+  opacity: 0.5;
+  z-index: -1;
+}
