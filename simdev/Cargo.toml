@@ -39,11 +39,11 @@ cbc = { version = "0.1.2", features = ["std"] }
 aes = "0.8.3"
 dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7" }
 borsh = "1.3.1"
-rings-core = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2" }
-rings-node = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2", default-features = false, features = [
-    "node_minimal",
+rings-core = { git = "https://github.com/krhougs/rings", rev = "dff13bff98962fd97bdbeafd71effa08c5997fd3" }
+rings-node = { git = "https://github.com/krhougs/rings", rev = "dff13bff98962fd97bdbeafd71effa08c5997fd3", default-features = false, features = [
+    "node",
 ] }
-rings-rpc = { git = "https://github.com/RingsNetwork/rings", rev = "43dda19d22be5db6f2e1e9bc1f65fdff965accd2" }
+rings-rpc = { git = "https://github.com/krhougs/rings", rev = "dff13bff98962fd97bdbeafd71effa08c5997fd3" }
 nostr-sdk = "0.24.0"
 async-trait = "0.1.77"
 bs58 = "0.5.0"
