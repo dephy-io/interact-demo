@@ -12,7 +12,7 @@ async fn main() -> Result<()> {
         .init();
     let cmd = Cmd::parse();
 
-    let ctx = Arc::new(Mutex::new(DeviceContext { weight: 1.0 }));
+    let ctx = Arc::new(Mutex::new(DeviceContext::default()));
     run_device_main(cmd, ctx, None).await?;
     Ok(())
 }

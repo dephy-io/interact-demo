@@ -1943,10 +1943,10 @@ define-properties@^1.1.3, define-properties@^1.2.0, define-properties@^1.2.1:
     has-property-descriptors "^1.0.0"
     object-keys "^1.1.1"
 
-dephy-borsh-types@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/dephy-borsh-types/-/dephy-borsh-types-0.0.1.tgz#b769067f1954faddb99746641bf3dc5269a4de0a"
-  integrity sha512-PpWk0fBs3XBdSobUbV8H4rSThk4mpR1SfyGpDVnLe4BrjU/wBhwATXOdIke31SnHVB8XDYMNb7xos6dkNUyS6Q==
+dephy-borsh-types@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/dephy-borsh-types/-/dephy-borsh-types-0.0.2.tgz#08bf7e79eb5fac231dacb393d6518adc8f37236e"
+  integrity sha512-IhaNe8qGs14hSDGlMYbXF8fqwABXOMAWmf9hkWD+xRiy2rograWg//erGo5j+ARKK40KwHnEqAuKJKx2Wza2eg==
 
 dequal@^2.0.3:
   version "2.0.3"
@@ -4148,6 +4148,11 @@ typescript-lru-cache@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/typescript-lru-cache/-/typescript-lru-cache-2.0.0.tgz#d4ad0f071ab51987b088a57c3c502d7dd62dee07"
   integrity sha512-Jp57Qyy8wXeMkdNuZiglE6v2Cypg13eDA1chHwDG6kq51X7gk4K7P7HaDdzZKCxkegXkVHNcPD0n5aW6OZH3aA==
+
+typescript@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.4.2.tgz#0ae9cebcfae970718474fe0da2c090cad6577372"
+  integrity sha512-+2/g0Fds1ERlP6JsakQQDXjZdZMM+rqpamFZJEKh4kwTIn3iDkgKtby0CeNd5ATNZ4Ry1ax15TMx0W2V+miizQ==
 
 unbox-primitive@^1.0.2:
   version "1.0.2"

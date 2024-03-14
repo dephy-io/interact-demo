@@ -260,6 +260,8 @@ const processEvent = (event, did) => {
   const r = borshDeserialize(RawMessage, new Uint8Array(m.raw));
   const payload = borshDeserialize(EventData, new Uint8Array(r.payload));
 
+  console.log("Message:", m, r, payload);
+
   return {
     id: event.id,
     event,

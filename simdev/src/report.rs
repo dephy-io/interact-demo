@@ -2,6 +2,7 @@ use crate::preludes::*;
 use crate::rings::AppRingsProvider;
 use crate::rings::BackendBehaviour;
 use borsh::{to_vec, BorshDeserialize, BorshSerialize};
+use dephy_edge::preludes::DephySessionStore;
 use futures::SinkExt;
 use iced::futures::channel::mpsc::Sender;
 use rand::rngs::OsRng;
@@ -12,9 +13,19 @@ use std::time::Duration;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Clone)]
 pub struct DeviceContext {
     pub weight: f64,
+    pub session: DephySessionStore,
+}
+
+impl Default for DeviceContext {
+    fn default() -> Self {
+        Self {
+            weight: 1.0,
+            session: DephySessionStore::new(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, BorshSerialize, BorshDeserialize)]
@@ -36,6 +47,9 @@ pub async fn run_device_main(
     };
     let d = Duration::from_secs(cmd.interval);
     let http = reqwest::Client::new();
+
+    let session_store = ctx.clone();
+    let session_store = session_store.lock().await.session.clone();
 
     macro_rules! tx_send {
         ($msg:expr) => {
@@ -78,10 +92,13 @@ pub async fn run_device_main(
         let to = Some(report_to.clone());
 
         let payload = to_vec(&report)?;
+
+        let session = session_store.fetch().await;
+
         let (payload, _) = signer
-            .create_message(MessageChannel::Normal(233), payload, to, None)
+            .create_message(session.0, Some(session.1),MessageChannel::Normal(233), payload, to, None)
             .await?;
-        info!("Fake report: {:?}", &report);
+        info!("Fake report: {:?}", &report.weight);
         tx_send!(GuiAppMessage::Message(format!("Published {:?}", &report)));
         let payload = to_vec(&payload)?;
         info!("Hex: 0x{}", hex::encode(payload.as_slice()));

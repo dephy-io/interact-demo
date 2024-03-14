@@ -29,7 +29,7 @@ fn main() -> iced::Result {
     GuiApp::run(Settings::default())
 }
 
-#[derive(Debug, Clone)]
+#[derive( Clone)]
 struct GuiApp {
     ctx: Arc<Mutex<DeviceContext>>,
     cmd: Cmd,
@@ -52,7 +52,7 @@ impl Application for GuiApp {
 
     fn new(_flags: Self::Flags) -> (Self, Command<Self::Message>) {
         let cmd = Cmd::parse();
-        let ctx = Arc::new(Mutex::new(DeviceContext { weight: 1.0 }));
+        let ctx = Arc::new(Mutex::new(DeviceContext::default()));
         let app = GuiApp {
             ctx: ctx.clone(),
             cmd,

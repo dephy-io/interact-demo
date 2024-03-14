@@ -18,7 +18,7 @@
     "borsh": "^2.0.0",
     "borsher": "^1.2.1",
     "bs58": "^5.0.0",
-    "dephy-borsh-types": "^0.0.1",
+    "dephy-borsh-types": "^0.0.2",
     "ethers": "^6.10.0",
     "framer-motion": "^11.0.3",
     "jotai": "^2.6.4",
@@ -51,6 +51,7 @@
     "postcss-preset-mantine": "^1.13.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "^3.2.4",
+    "typescript": "^5.4.2",
     "vite": "^5.0.8",
     "vite-plugin-wasm": "^3.3.0"
   },

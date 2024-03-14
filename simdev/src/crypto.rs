@@ -66,12 +66,14 @@ pub fn check_message(data: &[u8]) -> Result<(SignedMessage, RawMessage)> {
         hash,
         nonce,
         signature,
+        session_id,
         ..
     } = msg.clone();
     let raw = raw.as_slice();
     let hash = hash.as_slice();
     let hash_hex = hex::encode(hash);
     hasher.update(raw);
+    hasher.update(session_id.as_slice());
     hasher.update(nonce.to_string().as_bytes());
     let curr_hash = hasher.finalize_reset();
     ensure!(
@@ -114,9 +116,9 @@ pub fn check_message(data: &[u8]) -> Result<(SignedMessage, RawMessage)> {
     hasher.update(hash);
     let r_key = VerifyingKey::recover_from_digest(hasher, &rs, v)?;
     let r_key_addr = get_eth_address_bytes(&r_key);
-    let r_key_addr = r_key_addr.as_ref();
+
     ensure!(
-        from_address == r_key_addr.as_ref(),
+        from_address == &r_key_addr,
         "Signature check failed! expected_signer=0x{} actual_signer=0x{}",
         from_address_hex,
         hex::encode(r_key_addr)
@@ -142,6 +144,8 @@ pub fn check_message(data: &[u8]) -> Result<(SignedMessage, RawMessage)> {
 pub trait DephySigningKey {
     async fn create_message(
         &self,
+        session_id: Vec<u8>,
+        nonce: Option<u64>,
         channel: MessageChannel,
         payload: Vec<u8>,
         to_address: Option<Vec<u8>>,
@@ -149,6 +153,8 @@ pub trait DephySigningKey {
     ) -> Result<(SignedMessage, RawMessage)>;
     async fn create_nostr_event(
         &self,
+        session_id: Vec<u8>,
+        nonce: Option<u64>,
         channel: MessageChannel,
         payload: Vec<u8>,
         to_address: Option<Vec<u8>>,
@@ -164,6 +170,8 @@ pub trait DephySigningKey {
 impl DephySigningKey for SigningKey {
     async fn create_message(
         &self,
+        session_id: Vec<u8>,
+        nonce: Option<u64>,
         channel: MessageChannel,
         payload: Vec<u8>,
         to_address: Option<Vec<u8>>,
@@ -210,9 +218,13 @@ impl DephySigningKey for SigningKey {
             enc_iv: iv,
         };
         let raw = to_vec(&raw_msg)?;
+
+        let nonce = nonce.unwrap_or(timestamp);
+
         let mut hasher = Keccak256::new();
         hasher.update(&raw);
-        hasher.update(timestamp.to_string().as_bytes());
+        hasher.update(session_id.as_slice());
+        hasher.update(borsh::to_vec(&nonce)?.as_slice());
         let raw_hash = hasher.finalize_reset();
         hasher.update(&raw_hash);
         let (signature, recid) = self.sign_digest_recoverable(hasher)?;
@@ -223,9 +235,10 @@ impl DephySigningKey for SigningKey {
             SignedMessage {
                 raw,
                 hash: raw_hash.to_vec(),
-                nonce: timestamp,
+                nonce,
                 signature: sign_bytes,
                 last_edge_addr: Some(from_address),
+                session_id,
             },
             raw_msg,
         ))
@@ -233,6 +246,8 @@ impl DephySigningKey for SigningKey {
 
     async fn create_nostr_event(
         &self,
+        session_id: Vec<u8>,
+        nonce: Option<u64>,
         channel: MessageChannel,
         payload: Vec<u8>,
         to_address: Option<Vec<u8>>,
@@ -240,7 +255,7 @@ impl DephySigningKey for SigningKey {
         keys: &Keys,
     ) -> Result<Event> {
         let (msg, raw) = self
-            .create_message(channel, payload, to_address, encr_target)
+            .create_message(session_id, nonce, channel, payload, to_address, encr_target)
             .await?;
         let content = bs58::encode(to_vec(&msg)?.as_slice()).into_string();
         let tags = vec![

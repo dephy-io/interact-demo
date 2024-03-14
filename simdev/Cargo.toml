@@ -37,7 +37,8 @@ tokio = { version = "1.33.0", features = ["full", "io-util"] }
 tokio-util = { version = "0.7.10", features = ["codec"] }
 cbc = { version = "0.1.2", features = ["std"] }
 aes = "0.8.3"
-dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "0e169220bfede80a09f87bd157b691eecbd23dd7" }
+dephy-edge = { git = "https://github.com/dephy-io/dephy-edge", rev = "582b9026cde42885eb7884a07ec41ca44e8a5175" }
+dephy-types = { git = "https://github.com/dephy-io/dephy-edge", rev = "582b9026cde42885eb7884a07ec41ca44e8a5175" }
 borsh = "1.3.1"
 rings-core = { git = "https://github.com/krhougs/rings", rev = "dff13bff98962fd97bdbeafd71effa08c5997fd3" }
 rings-node = { git = "https://github.com/krhougs/rings", rev = "dff13bff98962fd97bdbeafd71effa08c5997fd3", default-features = false, features = [
