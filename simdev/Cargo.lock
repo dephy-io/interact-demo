@@ -692,7 +692,7 @@ dependencies = [
 [[package]]
 name = "borsher-macro"
 version = "0.1.0"
-source = "git+https://github.com/dephy-io/dephy-edge?rev=582b9026cde42885eb7884a07ec41ca44e8a5175#582b9026cde42885eb7884a07ec41ca44e8a5175"
+source = "git+https://github.com/dephy-io/dephy-edge?rev=481f5480728115c93676c0fe7bd39fa3d435b90e#481f5480728115c93676c0fe7bd39fa3d435b90e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1456,9 +1456,9 @@ dependencies = [
 
 [[package]]
 name = "curve25519-dalek"
-version = "4.1.1"
+version = "4.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e89b8c6a2e4b1f45971ad09761aafb85514a84744b67a95e32c3cc1352d1f65c"
+checksum = "0a677b8922c94e01bdbb12126b0bc852f00447528dee1782229af9c720c3f348"
 dependencies = [
  "cfg-if",
  "cpufeatures",
@@ -1549,7 +1549,7 @@ checksum = "7e962a19be5cfc3f3bf6dd8f61eb50107f356ad6270fbb3ed41476571db78be5"
 [[package]]
 name = "dephy-edge"
 version = "0.1.0"
-source = "git+https://github.com/dephy-io/dephy-edge?rev=582b9026cde42885eb7884a07ec41ca44e8a5175#582b9026cde42885eb7884a07ec41ca44e8a5175"
+source = "git+https://github.com/dephy-io/dephy-edge?rev=481f5480728115c93676c0fe7bd39fa3d435b90e#481f5480728115c93676c0fe7bd39fa3d435b90e"
 dependencies = [
  "aes",
  "anyhow",
@@ -1562,7 +1562,6 @@ dependencies = [
  "chrono",
  "clap",
  "config",
- "curve25519-dalek 4.1.1",
  "dashmap",
  "dephy-types",
  "dotenv",
@@ -1596,7 +1595,7 @@ dependencies = [
 [[package]]
 name = "dephy-types"
 version = "0.1.0"
-source = "git+https://github.com/dephy-io/dephy-edge?rev=582b9026cde42885eb7884a07ec41ca44e8a5175#582b9026cde42885eb7884a07ec41ca44e8a5175"
+source = "git+https://github.com/dephy-io/dephy-edge?rev=481f5480728115c93676c0fe7bd39fa3d435b90e#481f5480728115c93676c0fe7bd39fa3d435b90e"
 dependencies = [
  "borsh",
  "borsher-macro",
@@ -5017,7 +5016,7 @@ dependencies = [
 [[package]]
 name = "rings-core"
 version = "0.5.6"
-source = "git+https://github.com/krhougs/rings?rev=dff13bff98962fd97bdbeafd71effa08c5997fd3#dff13bff98962fd97bdbeafd71effa08c5997fd3"
+source = "git+https://github.com/RingsNetwork/rings?rev=10b621a97af984eee2d2a3113e0301e1cdd627fb#10b621a97af984eee2d2a3113e0301e1cdd627fb"
 dependencies = [
  "arrayref",
  "async-channel",
@@ -5069,7 +5068,7 @@ dependencies = [
 [[package]]
 name = "rings-derive"
 version = "0.5.6"
-source = "git+https://github.com/krhougs/rings?rev=dff13bff98962fd97bdbeafd71effa08c5997fd3#dff13bff98962fd97bdbeafd71effa08c5997fd3"
+source = "git+https://github.com/RingsNetwork/rings?rev=10b621a97af984eee2d2a3113e0301e1cdd627fb#10b621a97af984eee2d2a3113e0301e1cdd627fb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5079,7 +5078,7 @@ dependencies = [
 [[package]]
 name = "rings-node"
 version = "0.5.6"
-source = "git+https://github.com/krhougs/rings?rev=dff13bff98962fd97bdbeafd71effa08c5997fd3#dff13bff98962fd97bdbeafd71effa08c5997fd3"
+source = "git+https://github.com/RingsNetwork/rings?rev=10b621a97af984eee2d2a3113e0301e1cdd627fb#10b621a97af984eee2d2a3113e0301e1cdd627fb"
 dependencies = [
  "anyhow",
  "arrayref",
@@ -5129,7 +5128,7 @@ dependencies = [
 [[package]]
 name = "rings-rpc"
 version = "0.5.6"
-source = "git+https://github.com/krhougs/rings?rev=dff13bff98962fd97bdbeafd71effa08c5997fd3#dff13bff98962fd97bdbeafd71effa08c5997fd3"
+source = "git+https://github.com/RingsNetwork/rings?rev=10b621a97af984eee2d2a3113e0301e1cdd627fb#10b621a97af984eee2d2a3113e0301e1cdd627fb"
 dependencies = [
  "async-trait",
  "base64 0.13.1",
@@ -5149,7 +5148,7 @@ dependencies = [
 [[package]]
 name = "rings-transport"
 version = "0.5.6"
-source = "git+https://github.com/krhougs/rings?rev=dff13bff98962fd97bdbeafd71effa08c5997fd3#dff13bff98962fd97bdbeafd71effa08c5997fd3"
+source = "git+https://github.com/RingsNetwork/rings?rev=10b621a97af984eee2d2a3113e0301e1cdd627fb#10b621a97af984eee2d2a3113e0301e1cdd627fb"
 dependencies = [
  "async-trait",
  "bincode",
@@ -8254,7 +8253,7 @@ version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7e468321c81fb07fa7f4c636c3972b9100f0346e5b6a9f2bd0603a52f7ed277"
 dependencies = [
- "curve25519-dalek 4.1.1",
+ "curve25519-dalek 4.1.2",
  "rand_core 0.6.4",
  "serde",
  "zeroize",
