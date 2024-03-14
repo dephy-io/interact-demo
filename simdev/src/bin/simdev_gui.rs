@@ -29,7 +29,7 @@ fn main() -> iced::Result {
     GuiApp::run(Settings::default())
 }
 
-#[derive( Clone)]
+#[derive(Clone)]
 struct GuiApp {
     ctx: Arc<Mutex<DeviceContext>>,
     cmd: Cmd,

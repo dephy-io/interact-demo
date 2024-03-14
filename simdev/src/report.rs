@@ -96,7 +96,14 @@ pub async fn run_device_main(
         let session = session_store.fetch().await;
 
         let (payload, _) = signer
-            .create_message(session.0, Some(session.1),MessageChannel::Normal(233), payload, to, None)
+            .create_message(
+                session.0,
+                Some(session.1),
+                MessageChannel::Normal(233),
+                payload,
+                to,
+                None,
+            )
             .await?;
         info!("Fake report: {:?}", &report.weight);
         tx_send!(GuiAppMessage::Message(format!("Published {:?}", &report)));
